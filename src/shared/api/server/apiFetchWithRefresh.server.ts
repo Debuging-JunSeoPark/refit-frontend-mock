@@ -3,6 +3,7 @@ import 'server-only';
 import { cookies } from 'next/headers';
 
 import { apiFetch, BusinessError, HttpError } from '@/shared/api';
+import { getMockApiData } from '@/shared/api/mockApi';
 import { refreshAuthTokens } from './refreshTokens.server';
 
 type AuthErrorCode =
@@ -40,6 +41,11 @@ export async function apiFetchWithRefresh<T>(
   accessToken?: string,
   allowRefresh: boolean = true,
 ): Promise<T> {
+  const mockData = getMockApiData<T>(input, init);
+  if (mockData !== undefined) {
+    return mockData;
+  }
+
   const cookieStore = await cookies();
   let token = accessToken ?? cookieStore.get('access_token')?.value;
 

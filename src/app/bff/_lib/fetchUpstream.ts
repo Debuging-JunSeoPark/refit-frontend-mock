@@ -1,4 +1,5 @@
 import { withTimeout, RequestTimeoutError } from '@/shared/api/server';
+import { createMockApiResponse } from '@/shared/api/mockApi';
 import { trackServerApiRequest } from '@/shared/metrics/serverApiMetricsTracker';
 
 type TimeoutProfile = 'optional' | 'default' | 'critical';
@@ -67,6 +68,11 @@ export async function fetchBffUpstream(
   input: RequestInfo | URL,
   options?: FetchBffUpstreamOptions,
 ): Promise<Response> {
+  const mockResponse = createMockApiResponse(input, options);
+  if (mockResponse) {
+    return mockResponse;
+  }
+
   const { timeoutMs: timeoutMsOption, timeoutProfile, bffPath, ...init } = options ?? {};
   const method = init.method ?? 'GET';
   const upstreamPath = getUpstreamPath(input);

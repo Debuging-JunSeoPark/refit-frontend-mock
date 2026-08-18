@@ -1,4 +1,5 @@
 import { BusinessError, HttpError, buildApiUrl } from '@/shared/api';
+import { isMockApiEnabled } from '@/shared/api/mockApi';
 import type { ApiResponse } from '@/shared/api/types';
 
 type NicknameCheckResponse = {
@@ -10,6 +11,14 @@ type NicknameCheckResponse = {
 const NICKNAME_CHECK_PATH = '/api/v1/users';
 
 export async function checkNickname(nickname: string): Promise<NicknameCheckResponse> {
+  if (isMockApiEnabled()) {
+    return {
+      nickname,
+      exists: false,
+      available: true,
+    };
+  }
+
   const url = buildApiUrl(`${NICKNAME_CHECK_PATH}?nickname=${encodeURIComponent(nickname)}`);
   const res = await fetch(url, { credentials: 'include' });
 

@@ -1,4 +1,10 @@
+import { isMockApiEnabled } from '@/shared/api/mockApi';
+
 export async function uploadToPresignedUrl(file: File, presignedUrl: string): Promise<void> {
+  if (isMockApiEnabled()) {
+    return;
+  }
+
   const contentType = file.type || 'application/octet-stream';
   const res = await fetch(presignedUrl, {
     method: 'PUT',

@@ -1,6 +1,7 @@
 import { cookies } from 'next/headers';
 
 import { buildApiUrl, BusinessError, HttpError } from '@/shared/api';
+import { isMockApiEnabled } from '@/shared/api/mockApi';
 import { apiFetchWithRefresh } from '@/shared/api/server';
 
 type AuthStatus = {
@@ -12,6 +13,10 @@ type GuestStatus = {
 };
 
 export async function getMe(): Promise<AuthStatus | GuestStatus> {
+  if (isMockApiEnabled()) {
+    return { authenticated: true };
+  }
+
   const cookieStore = await cookies();
   const accessToken = cookieStore.get('access_token')?.value;
   if (!accessToken) {

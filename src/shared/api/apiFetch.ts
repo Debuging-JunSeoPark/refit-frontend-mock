@@ -1,5 +1,6 @@
 import { readAccessToken } from './accessToken';
 import { BusinessError, HttpError } from './errors';
+import { getMockApiData } from './mockApi';
 import type { ApiResponse } from './types';
 import { trackApiRequest } from '@/shared/metrics/apiMetricsTracker';
 
@@ -47,6 +48,11 @@ async function tryRefreshAuthTokens(): Promise<boolean> {
 }
 
 export async function apiFetch<T>(input: RequestInfo, init?: ApiFetchOptions): Promise<T> {
+  const mockData = getMockApiData<T>(input, init);
+  if (mockData !== undefined) {
+    return mockData;
+  }
+
   const {
     successCodes = DEFAULT_SUCCESS_CODES,
     retryOnUnauthorized = true,
